@@ -2,8 +2,8 @@
 # create-time: 2018-5-12
 # function: gloabl control tiny4412-project
 
-DIR_UBOOT = ./uboot_tiny4412_0929
-DIR_LINUX = ./linux-3.5
+DIR_UBOOT = ./uboot/uboot-201012
+DIR_LINUX = ./kernel/linux-3.5
 DIR_IMAGES = ./images
 
 CMD_MKIMAGE = mkimage -A arm -O linux -T kernel -C none -a 0x40008000 -e 0x40008040 -n Linux-3.5
@@ -14,7 +14,7 @@ all: uboot linux
 
 tiny4412_config:
 	make -C $(DIR_UBOOT) tiny4412_config
-	cp  $(DIR_LINUX)/tiny4412_linux_defconfig $(DIR_LINUX)/.config
+	cp $(DIR_LINUX)/tiny4412_linux_defconfig $(DIR_LINUX)/.config
 	
 uboot:
 	make -C $(DIR_UBOOT)
