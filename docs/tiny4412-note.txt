@@ -1,0 +1,39 @@
+开始时间：2018-3-30		更新时间：2018-4-1		复习时间：
+
+
+一 linux
+mount -t nfs -o nolock 192.168.1.7:/home/jf/tiny4412/rootfs /tmp
+ifconfig eth0 192.168.1.12 netmask 255.255.255.0
+route add default gw 192.168.1.1
+
+
+二 uboot
+1 fastboot
+  将fastboot拷贝到linux下,使用fastboot烧写完毕请稍微等一点时间
+  fastboot flash bootloader ../tiny4412/uboot_tiny4412_0929/u-boot.bin
+  fastboot flash kernel ../tiny4412/images/uImage
+  fastboot reboot
+
+  fastboot flash bootloader tiny4412/linux/u-boot.bin
+  fastboot flash kernel tiny4412/linux/zImage
+  fastboot flash system tiny4412/linux/rootfs_qtopia_qt4.img
+  fastboot reboot
+  
+2 启动参数
+  setenv bootargs root=/dev/nfs nfsroot=192.168.1.7:/home/jf/tiny4412/rootfs ip=192.168.1.12:192.168.1.7:192.168.1.1:255.255.255.0::eth0:off init=/linuxrc console=ttySAC0,115200
+  
+  setenv bootargs root=/dev/mmcblk0p2 rootfstype=ext4 console=ttySAC0,115200 init=/linuxrc
+  
+
+
+二 配置
+movi read kernel 0 40008000;movi read rootfs 0 41000000 400000;bootm 40008000 41000000
+三 X
+1 编译
+  uboot：make tiny4412_config
+		 make -C sd_fuse; cd sd_fuse/tiny4412
+		 sudo ./sd_fusing.sh	/dev/sdb
+		 ../mkbl2 ../../u-boot.bin bl2.bin 14336
+  linux：vim tiny4412_linux_defconfig: #CONFIG_ARM_TRUSTZONE=y
+		 cp tiny4412_linux_defconfig .config
+         
