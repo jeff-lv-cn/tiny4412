@@ -6,6 +6,8 @@ DIR_UBOOT = ./uboot_tiny4412_0929
 DIR_LINUX = ./linux-3.5
 DIR_IMAGES = ./images
 
+CMD_MKIMAGE = mkimage -A arm -O linux -T kernel -C none -a 0x40008000 -e 0x40008040 -n Linux-3.5
+
 .PHONY : all install clean distclean 
 
 all: uboot linux
@@ -21,12 +23,13 @@ uboot:
 linux:
 	make -C $(DIR_LINUX) zImage
 	make install-linux
-	
+
 install: install-uboot install-linux
 install-uboot:
 	cp $(DIR_UBOOT)/u-boot.bin $(DIR_IMAGES)
 install-linux:
 	cp $(DIR_LINUX)/arch/arm/boot/zImage $(DIR_IMAGES)
+	$(CMD_MKIMAGE) -d $(DIR_IMAGES)/zImage $(DIR_IMAGES)/uImage
 
 clean: clean-uboot clean-linux
 	rm $(DIR_IMAGES)/*

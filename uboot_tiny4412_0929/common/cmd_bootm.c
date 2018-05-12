@@ -590,6 +590,7 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	ulong		load_end = 0;
 	int		ret;
 	boot_os_fn	*boot_fn;
+	int is_zImage = 0;
 
 #ifdef CONFIG_SECURE_BOOT
 #ifndef CONFIG_SECURE_BL1_ONLY
@@ -624,8 +625,9 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 
 		/* save pointer to image header */
 		images.legacy_hdr_os = hdr;
-
 		images.legacy_hdr_valid = 1;
+
+		is_zImage = 1;
 
 		goto after_header_check;
 	}
@@ -723,8 +725,10 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 
 #if defined(CONFIG_ZIMAGE_BOOT)
 after_header_check:
-	images.os.os = hdr->ih_os;
-	images.ep = image_get_ep (&images.legacy_hdr_os_copy);
+	if (is_zImage == 1) {
+		images.os.os = hdr->ih_os;
+		images.ep = image_get_ep (&images.legacy_hdr_os_copy);
+	}
 #endif
 
 #ifdef CONFIG_SILENT_CONSOLE
