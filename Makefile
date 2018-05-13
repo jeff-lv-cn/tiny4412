@@ -1,49 +1,50 @@
-# author:jeff-lv  email:jeff-lv-1009080308@outlook.com
-# create-time: 2018-5-12
-# function: gloabl control tiny4412-project
+# tiny 44412 top Makefile
+# author:jeff-lv  email:jeff-lv-1009080308@outlook.com create-time: 2018-5-12
 
-DIR_UBOOT = ./uboot/uboot-201012
-DIR_LINUX = ./kernel/linux-3.5
+DIR_BOOTLOADER = ./bootloader
+DIR_KERNEL = ./kernel
 DIR_IMAGES = ./images
+#DIR_TOOL_CAHIN = /home/jf/tiny4412/4.5.1/bin
+DIR_TOOL_CAHIN = /home/jf/tiny4412/tools/arm-2014.05/bin
 
-CMD_MKIMAGE = mkimage -A arm -O linux -T kernel -C none -a 0x40008000 -e 0x40008040 -n Linux-3.5
-
-.PHONY : all install clean distclean 
-
-all: uboot linux
-
-tiny4412_config:
-	make -C $(DIR_UBOOT) tiny4412_config
-	cp $(DIR_LINUX)/tiny4412_linux_defconfig $(DIR_LINUX)/.config
+.PHONY : all install clean distclean \
+		 bootloader kernel
+		 
+all: bootloader kernel
 	
-uboot:
-	make -C $(DIR_UBOOT)
-	make install-uboot
+bootloader:
+	make -C $(DIR_BOOTLOADER)
+	make -C $(DIR_BOOTLOADER) install
 	
-linux:
-	make -C $(DIR_LINUX) zImage
-	make install-linux
+kernel:
+	make -C $(DIR_KERNEL)
+	make -C $(DIR_KERNEL) install
+	
+config: config-bootloader config-kernel
+config-bootloader:
+	make -C $(DIR_BOOTLOADER) config
+config-kernel:
+	make -C $(DIR_KERNEL) config
 
-install: install-uboot install-linux
-install-uboot:
-	cp $(DIR_UBOOT)/u-boot.bin $(DIR_IMAGES)
-install-linux:
-	cp $(DIR_LINUX)/arch/arm/boot/zImage $(DIR_IMAGES)
-	$(CMD_MKIMAGE) -d $(DIR_IMAGES)/zImage $(DIR_IMAGES)/uImage
+install: install-bootloader install-kernel
+install-bootloader:
+	make -C $(DIR_BOOTLOADER) install
+install-kernel:
+	make -C $(DIR_KERNEL) install
 
-clean: clean-uboot clean-linux
-	rm $(DIR_IMAGES)/*
-clean-uboot:
-	make -C $(DIR_UBOOT) clean
-clean-linux:
-	make -C $(DIR_LINUX) clean
+clean: clean-bootloader clean-kernel
+	rm -rf $(DIR_IMAGES)/*.bin $(DIR_IMAGES)/*Image*
+clean-bootloader:
+	make -C $(DIR_BOOTLOADER) clean
+clean-kernel:
+	make -C $(DIR_KERNEL) clean
 
-distclean: distclean-uboot distclean-linux
-	rm $(DIR_IMAGES)/*
-distclean-uboot: 
-	make -C $(DIR_UBOOT) distclean
-distclean-linux:
-	make -C $(DIR_LINUX) clean
+distclean: distclean-bootloader distclean-kernel
+	rm -rf $(DIR_IMAGES)/*.bin $(DIR_IMAGES)/*Image*
+distclean-bootloader: 
+	make -C $(DIR_BOOTLOADER) distclean
+distclean-kernel:
+	make -C $(DIR_KERNEL) distclean
 
 
 	
