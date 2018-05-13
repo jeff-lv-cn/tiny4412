@@ -1,7 +1,7 @@
 # tiny4412 kernel Makefile
 
-#LINUX_VERSION = 3.5
-LINUX_VERSION = 4.5.7
+LINUX_VERSION = 3.5
+#LINUX_VERSION = 4.5.7
 
 DIR_IMAGES := ../images
 ifeq ("$(LINUX_VERSION)", "3.5")
